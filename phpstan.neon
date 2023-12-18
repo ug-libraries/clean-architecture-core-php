@@ -1,0 +1,13 @@
+parameters:
+    level: max
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    editorUrl: '%%file%%:%%line%%'
+    checkGenericClassInNonGenericObjectType: false
+    checkExplicitMixed: false
+    ignoreErrors:
+        - '/Cannot call method present\(\) on Cleancoders\\Core\\Presenter\\PresenterInterface\|null\./'
