@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Core\Http\Request;
+namespace Cleancoders\Core\Request;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com

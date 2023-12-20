@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Core\Http\Response;
+namespace Cleancoders\Core\Response;
 
 /**
  * Represent the application response

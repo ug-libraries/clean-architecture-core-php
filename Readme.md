@@ -26,7 +26,7 @@ composer require urichy/clean-architecture-core
 
 ### Application Request
 
-Requests serve as input object, encapsulating data from your http controller. In the core library, use the `\Cleancoders\Core\Http\Request\Request` class
+Requests serve as input object, encapsulating data from your http controller. In the core library, use the `\Cleancoders\Core\Request\Request` class
 as the foundation for creating custom application request object. Define the expected fields using the `requestPossibleFields` property.
 
 ### Presenter
@@ -41,14 +41,14 @@ Extends the `\Cleancoders\Core\Usecase\Usecase` class and implements `\Cleancode
 
 ### Response
 
-- Use `\Cleancoders\Core\Http\Response\Response` to create usecase `response`.
+- Use `\Cleancoders\Core\Response\Response` to create usecase `response`.
 - Supports success/failure status, custom message, HTTP status codes, and response data.
 
 ## Example of how to use the core library
 
 1. Creating a custom request and handling missing/unauthorized fields
 
-- Extends `\Cleancoders\Core\Http\Request\Request` and implements `\Cleancoders\Core\Http\Request\RequestInterface` to create
+- Extends `\Cleancoders\Core\Request\Request` and implements `\Cleancoders\Core\Request\RequestInterface` to create
   custom application request objects.
 - Define the possible fields in the `requestPossibleFields` property.
 
@@ -57,10 +57,15 @@ Extends the `\Cleancoders\Core\Usecase\Usecase` class and implements `\Cleancode
 
 declare(strict_types=1);
 
-use Cleancoders\Core\Http\Request\Request;
-use Cleancoders\Core\Http\Request\RequestInterface;
+use Cleancoders\Core\Request\Request;
+use Cleancoders\Core\Request\RequestInterface;
 
-final class CustomRequest extends Request implements RequestInterface
+interface CustomRequestInterface extends RequestInterface
+{
+
+}
+
+final class CustomRequest extends Request implements CustomRequestInterface
 {
     protected static array $requestPossibleFields = [
         'field_1' => null,
@@ -100,7 +105,7 @@ dd($request->getRequestId()); // 6d326314-f527-483c-80df-7c157acdb95b
 dd($request->getRequestData()); // ['field_1' => 1, 'field_2' => 'value']
 
 // or with nested request parameters
-final class CustomRequest extends Request implements RequestInterface
+final class CustomRequest extends Request implements CustomRequestInterface
 {
     protected static array $requestPossibleFields = [
         'field_1' => null,
@@ -140,13 +145,18 @@ try {
 
 declare(strict_types=1);
 
-use Cleancoders\Core\Http\Response\Response;
+use Cleancoders\Core\Response\Response;
 use Cleancoders\Core\Response\StatusCode;
 use Cleancoders\Core\Usecase\Usecase;
 use Cleancoders\Core\Usecase\UsecaseInterface;
 
+interface CustomUsecaseInterface extends UsecaseInterface
+{
+
+}
+
 // with request and presenter with empty response
-final class CustomUsecase extends Usecase implements UsecaseInterface
+final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
@@ -162,7 +172,7 @@ final class CustomUsecase extends Usecase implements UsecaseInterface
 
 // or with response
 
-final class CustomUsecase extends Usecase implements UsecaseInterface
+final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
@@ -183,7 +193,7 @@ final class CustomUsecase extends Usecase implements UsecaseInterface
 }
 
 // without request
-final class CustomUsecase extends Usecase implements UsecaseInterface
+final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
@@ -205,7 +215,7 @@ final class CustomUsecase extends Usecase implements UsecaseInterface
 }
 
 // with request and without presenter
-final class CustomUsecase extends Usecase implements UsecaseInterface
+final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
@@ -231,7 +241,12 @@ declare(strict_types=1);
 use Cleancoders\Core\Presenter\Presenter;
 use Cleancoders\Core\Presenter\PresenterInterface;
 
-final class CustomPresenter extends Presenter implements PresenterInterface
+interface CustomPresenterInterface extends PresenterInterface
+{
+
+}
+
+final class CustomPresenter extends Presenter implements CustomPresenterInterface
 {
   // you can override parent methods here to customize them
 }
@@ -313,11 +328,13 @@ declare(strict_types=1);
 namespace Cleancoders\Controller;
 
 use Cleancoders\Core\Exception\Exception;
-use Cleancoders\Core\Http\Response\StatusCode;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Cleancoders\Core\Response\StatusCode;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/', name: "_app", methods: 'GET')]
 final class CustomController extends AbstractController
 {
     public function __construct(
@@ -326,8 +343,7 @@ final class CustomController extends AbstractController
         private readonly CustomRequestInterface $customRequest
     ) {}
 
-    #[Route('/', name: "_app", methods: 'GET')]
-    public function route(SymfonyRequest $request): JsonResponse
+    public function __invoke(SymfonyRequest $request): JsonResponse
     {
         try {
             $this
@@ -351,6 +367,8 @@ final class CustomController extends AbstractController
 }
 
 // or
+
+#[Route('/', name: "_app", methods: 'POST')]
 final class CustomController extends AbstractController
 {
     public function __construct(
@@ -358,8 +376,7 @@ final class CustomController extends AbstractController
         private readonly CustomRequestInterface $customRequest
     ) {}
 
-    #[Route('/', name: "_app", methods: 'POST')]
-    public function route(SymfonyRequest $request): JsonResponse
+    public function __invoke(SymfonyRequest $request): JsonResponse
     {
         try {
             $this
@@ -399,7 +416,7 @@ final class CustomController extends Controller
         private readonly CustomUsecaseInterface $customUsecase
     ) {}
 
-    public function route(LaravelRequest $request): LaravelResponse
+    public function __invoke(LaravelRequest $request): LaravelResponse
     {
         try {
             $this->customUsecase->execute();
@@ -422,7 +439,7 @@ final class CustomController extends Controller
         private readonly CustomUsecaseInterface $customUsecase
     ) {}
 
-    public function route(LaravelRequest $request): LaravelResponse
+    public function __invoke(LaravelRequest $request): LaravelResponse
     {
         try {
             $this

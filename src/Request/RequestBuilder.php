@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Core\Http\Request;
+namespace Cleancoders\Core\Request;
 
 use Ramsey\Uuid\Uuid;
 

@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Tests\Core\Http\Request;
+namespace Cleancoders\Tests\Core\Request;
 
 use Cleancoders\Core\Exception\BadRequestContentException;
 use Cleancoders\Core\Exception\Exception;
-use Cleancoders\Core\Http\Request\Request as BaseRequest;
-use Cleancoders\Core\Http\Request\RequestBuilderInterface;
-use Cleancoders\Core\Http\Request\RequestInterface;
-use Cleancoders\Core\Http\Response\StatusCode;
+use Cleancoders\Core\Request\Request as BaseRequest;
+use Cleancoders\Core\Request\RequestBuilderInterface;
+use Cleancoders\Core\Request\RequestInterface;
+use Cleancoders\Core\Response\StatusCode;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

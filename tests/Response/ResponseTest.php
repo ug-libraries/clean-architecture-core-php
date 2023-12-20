@@ -8,10 +8,10 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Tests\Core\Http\Response;
+namespace Cleancoders\Tests\Core\Response;
 
-use Cleancoders\Core\Http\Response\Response;
-use Cleancoders\Core\Http\Response\StatusCode;
+use Cleancoders\Core\Response\Response;
+use Cleancoders\Core\Response\StatusCode;
 use PHPUnit\Framework\TestCase;
 
 /**

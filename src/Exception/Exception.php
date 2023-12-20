@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Cleancoders\Core\Exception;
 
-use Cleancoders\Core\Http\Response\StatusCode;
+use Cleancoders\Core\Response\StatusCode;
 use RuntimeException;
 
 /**

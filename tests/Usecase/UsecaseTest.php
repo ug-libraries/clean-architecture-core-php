@@ -11,12 +11,12 @@ declare(strict_types=1);
 namespace Cleancoders\Tests\Core\Usecase;
 
 use Cleancoders\Core\Exception\BadRequestContentException;
-use Cleancoders\Core\Http\Request\Request as BaseRequest;
-use Cleancoders\Core\Http\Request\RequestInterface;
-use Cleancoders\Core\Http\Response\Response;
-use Cleancoders\Core\Http\Response\StatusCode;
 use Cleancoders\Core\Presenter\Presenter as BasePresenter;
 use Cleancoders\Core\Presenter\PresenterInterface;
+use Cleancoders\Core\Request\Request as BaseRequest;
+use Cleancoders\Core\Request\RequestInterface;
+use Cleancoders\Core\Response\Response;
+use Cleancoders\Core\Response\StatusCode;
 use Cleancoders\Core\Usecase\Usecase as BaseUsecase;
 use Cleancoders\Core\Usecase\UsecaseInterface;
 use PHPUnit\Framework\TestCase;

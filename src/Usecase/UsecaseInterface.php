@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Cleancoders\Core\Usecase;
 
-use Cleancoders\Core\Http\Request\RequestBuilderInterface;
 use Cleancoders\Core\Presenter\PresenterInterface;
+use Cleancoders\Core\Request\RequestBuilderInterface;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com

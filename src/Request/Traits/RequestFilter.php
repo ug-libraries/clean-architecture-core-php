@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Core\Http\Request\Traits;
+namespace Cleancoders\Core\Request\Traits;
 
 /**
  * Application request filter

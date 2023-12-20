@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Cleancoders\Core\Presenter;
 
-use Cleancoders\Core\Http\Response\ResponseInterface;
+use Cleancoders\Core\Response\ResponseInterface;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com

@@ -8,10 +8,10 @@
 
 declare(strict_types=1);
 
-namespace Cleancoders\Core\Http\Request;
+namespace Cleancoders\Core\Request;
 
 use Cleancoders\Core\Exception\BadRequestContentException;
-use Cleancoders\Core\Http\Request\Traits\RequestFilter;
+use Cleancoders\Core\Request\Traits\RequestFilter;
 
 /**
  * Application request
