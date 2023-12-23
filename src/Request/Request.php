@@ -12,6 +12,7 @@ namespace Cleancoders\Core\Request;
 
 use Cleancoders\Core\Exception\BadRequestContentException;
 use Cleancoders\Core\Request\Traits\RequestFilter;
+use Throwable;
 
 /**
  * Application request
@@ -33,7 +34,14 @@ abstract class Request
         $requestValidationResult = static::requestPayloadFilter($payload);
         static::throwMissingFieldsExceptionIfNeeded($requestValidationResult['missing_fields']);
         static::throwUnRequiredFieldsExceptionIfNeeded($requestValidationResult['unauthorized_fields']);
-        static::applyConstraintsOnRequestFields($payload);
+
+        try {
+            static::applyConstraintsOnRequestFields($payload);
+        } catch (Throwable $exception) {
+            throw new BadRequestContentException([
+                'message' => $exception->getMessage(),
+            ]);
+        }
 
         return new RequestBuilder($payload);
     }

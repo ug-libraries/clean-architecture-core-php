@@ -89,14 +89,8 @@ final class CustomRequest extends Request implements CustomRequestInterface
      */
     protected static function applyConstraintsOnRequestFields(array $requestData): void
     {
-        try {
-            Assert::that($requestData['field_1'], '[field_1] field must not be an empty string.')->notEmpty()->string();
-            Assert::that($requestData['field_2'], '[field_2] field must not be an empty string.')->notEmpty()->string();
-        } catch (\Exception $exception) {
-            throw new \Cleancoders\Core\Exception\BadRequestContentException([
-                'message' => $exception->getMessage(),
-            ]);
-        }
+        Assert::that($requestData['field_1'], '[field_1] field must not be an empty string.')->notEmpty()->string();
+        Assert::that($requestData['field_2'], '[field_2] field must not be an empty string.')->notEmpty()->string();
     }
 }
 

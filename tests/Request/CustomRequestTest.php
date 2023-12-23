@@ -188,16 +188,10 @@ final class CustomRequestTest extends TestCase
 
             protected static function applyConstraintsOnRequestFields(array $requestData): void
             {
-                try {
-                    Assert::that(
-                        $requestData['field_1'],
-                        '[field_1] field must not be an empty string.'
-                    )->notEmpty()->string();
-                } catch (\Exception $exception) {
-                    throw new BadRequestContentException([
-                        'message' => $exception->getMessage(),
-                    ]);
-                }
+                Assert::that(
+                    $requestData['field_1'],
+                    '[field_1] field must not be an empty string.'
+                )->notEmpty()->string();
             }
         };
 
