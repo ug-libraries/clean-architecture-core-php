@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Cleancoders\Tests\Core\Request;
 
+use Assert\Assert;
 use Cleancoders\Core\Exception\BadRequestContentException;
 use Cleancoders\Core\Exception\Exception;
 use Cleancoders\Core\Request\Request as BaseRequest;
@@ -174,6 +175,42 @@ final class CustomRequestTest extends TestCase
             'field_3' => new stdClass(),
         ];
         $this->assertEquals($payload, $customRequest::createFromPayload($payload)->getRequestData());
+    }
+
+    public function testCanBuildNewRequestWithRequiredParametersAndApplyCustomConstraints(): void
+    {
+        $customRequest = new class () extends BaseRequest implements RequestInterface {
+            protected static array $requestPossibleFields = [
+                'field_1' => null,
+                'field_2' => null,
+                'field_3' => null,
+            ];
+
+            protected static function applyConstraintsOnRequestFields(array $requestData): void
+            {
+                try {
+                    Assert::that(
+                        $requestData['field_1'],
+                        '[field_1] field must not be an empty string.'
+                    )->notEmpty()->string();
+                } catch (\Exception $exception) {
+                    throw new BadRequestContentException([
+                        'message' => $exception->getMessage(),
+                    ]);
+                }
+            }
+        };
+
+        try {
+            $payload = [
+                'field_1' => '',
+                'field_2' => 'value',
+                'field_3' => new stdClass(),
+            ];
+            $customRequest::createFromPayload($payload);
+        } catch (BadRequestContentException $exception) {
+            $this->assertEquals('[field_1] field must not be an empty string.', $exception->getMessage());
+        }
     }
 
     /**

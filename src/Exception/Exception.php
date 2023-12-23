@@ -38,7 +38,7 @@ abstract class Exception extends RuntimeException
     public function __construct(array $errors)
     {
         parent::__construct(
-            message: $errors['message'],
+            message: $errors['message'] ?? '',
             code: $this->statusCode->getValue()
         );
         $this->errors = $errors;

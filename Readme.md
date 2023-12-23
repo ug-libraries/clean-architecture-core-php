@@ -73,6 +73,33 @@ final class CustomRequest extends Request implements CustomRequestInterface
     ];
 }
 
+> You can also apply constraints to the request fields. For that you have to
+modify the `applyConstraintsOnRequestFields` methods as below:
+
+final class CustomRequest extends Request implements CustomRequestInterface
+{
+    protected static array $requestPossibleFields = [
+        'field_1' => null,
+        'field_2' => null,
+    ];
+    
+    /**
+     * @param array<string, mixed> $requestData
+     * @return void
+     */
+    protected static function applyConstraintsOnRequestFields(array $requestData): void
+    {
+        try {
+            Assert::that($requestData['field_1'], '[field_1] field must not be an empty string.')->notEmpty()->string();
+            Assert::that($requestData['field_2'], '[field_2] field must not be an empty string.')->notEmpty()->string();
+        } catch (\Exception $exception) {
+            throw new \Cleancoders\Core\Exception\BadRequestContentException([
+                'message' => $exception->getMessage(),
+            ]);
+        }
+    }
+}
+
 // when unauthorized fields
 try {
     CustomRequest::createFromPayload([

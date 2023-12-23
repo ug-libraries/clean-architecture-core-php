@@ -33,6 +33,7 @@ abstract class Request
         $requestValidationResult = static::requestPayloadFilter($payload);
         static::throwMissingFieldsExceptionIfNeeded($requestValidationResult['missing_fields']);
         static::throwUnRequiredFieldsExceptionIfNeeded($requestValidationResult['unauthorized_fields']);
+        static::applyConstraintsOnRequestFields($payload);
 
         return new RequestBuilder($payload);
     }
@@ -65,5 +66,15 @@ abstract class Request
                 'unrequired_fields' => $unauthorizedFields,
             ]);
         }
+    }
+
+    /**
+     * Apply constraints on request fields if needed.
+     *
+     * @param array<string, mixed> $requestData
+     */
+    protected static function applyConstraintsOnRequestFields(array $requestData): void
+    {
+        echo '';
     }
 }
