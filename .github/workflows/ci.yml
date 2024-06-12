@@ -1,0 +1,57 @@
+##################################################################################
+#
+# Core library to implement clean architecture in any PHP project
+#
+# @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
+# @copyright 2023
+
+# @license   http://www.opensource.org/licenses/mit-license.php MIT
+# @link      https://github.com/uriichy/clean-architecture-core.git
+#
+##################################################################################
+
+name: "Urichy Clean Architecture Core CI"
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+
+jobs:
+  tests:
+    strategy:
+      # do not stop the workflow if single run failed
+      fail-fast: false
+      matrix:
+        # quotes are needed it is treated as a number and zero at decimal part is gone at runtime
+        php: ["8.2"]
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: "Checkout repository..."
+        uses: actions/checkout@v3
+
+      # https://github.com/marketplace/actions/composer-php-actions
+      - name: "Installing dependencies..."
+        uses: php-actions/composer@v6
+        with:
+          version: 2
+          php_version: "${{ matrix.php }}"
+          dev: yes
+
+      - name: "Checking Coding Standards..."
+        shell: bash
+        run: vendor/bin/phpcs --standard=PSR12 --colors --standard=phpcs.xml -p src tests
+
+      - name: "Running PHPStan..."
+        shell: bash
+        run: vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=-1 src tests
+
+      # https://github.com/marketplace/actions/phpunit-php-actions
+      - name: "Running PHPUnit..."
+        shell: bash
+        run: vendor/bin/phpunit tests --testdox --colors=always
