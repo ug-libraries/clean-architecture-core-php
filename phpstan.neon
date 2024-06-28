@@ -4,8 +4,6 @@ parameters:
         - src/
         - tests/
     editorUrl: '%%file%%:%%line%%'
-    checkGenericClassInNonGenericObjectType: false
     checkExplicitMixed: false
     ignoreErrors:
-        - '/Cannot call method present\(\) on Urichy\\Core\\Presenter\\PresenterInterface\|null\./'
-        - '/Parameter \#1 \$json of function json_decode expects string, string\|false given\./'
+        - '/Unsafe usage of new static\(\)\./'

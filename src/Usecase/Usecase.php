@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Urichy\Core\Usecase;
 
 use Urichy\Core\Presenter\PresenterInterface;
-use Urichy\Core\Request\RequestBuilderInterface;
+use Urichy\Core\Request\RequestInterface;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
@@ -21,17 +21,17 @@ abstract class Usecase implements UsecaseInterface
     /**
      * The application request to be processed by usecase
      */
-    protected ?RequestBuilderInterface $request = null;
+    protected RequestInterface $request;
 
     /**
      * The presenter to which the usecase processing response will be sent
      */
-    protected ?PresenterInterface $presenter = null;
+    protected PresenterInterface $presenter;
 
     /**
      * Set applicative request to be processed by usecase
      */
-    public function setRequest(?RequestBuilderInterface $request = null): static
+    public function setRequest(RequestInterface $request): static
     {
         $this->request = $request;
 
@@ -41,7 +41,7 @@ abstract class Usecase implements UsecaseInterface
     /**
      * Set presenter to get usecase response
      */
-    public function setPresenter(?PresenterInterface $presenter = null): static
+    public function setPresenter(PresenterInterface $presenter): static
     {
         $this->presenter = $presenter;
 
@@ -51,18 +51,18 @@ abstract class Usecase implements UsecaseInterface
     /**
      * Get request data
      *
-     * @return array<string, mixed>|object
+     * @return array<string, mixed>
      */
-    protected function getRequestData(bool $asArray = true): array|object
+    protected function getRequestData(): array
     {
-        if ($this->request === null) {
-            return [];
-        }
+        return $this->request->toArray();
+    }
 
-        if ($asArray) {
-            return $this->request->getRequestDataAsArray();
-        }
-
-        return $this->request->getRequestDataAsObject();
+    /**
+     * Get the application request field value.
+     */
+    protected function getField(string $name, mixed $default = null): mixed
+    {
+        return $this->request->get($name, $default);
     }
 }

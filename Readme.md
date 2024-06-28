@@ -179,6 +179,11 @@ $request = CustomRequest::createFromPayload([
 ]);
 
 dd($request->getRequestId()); // 6d326314-f527-483c-80df-7c157acdb95b
+dd([
+    'field_1' => $request->get('field_1'), 
+    'field_2' => $request->get('field_2'),
+    'unknown' => $request->get('unknown', 'default_value'),
+]); // ['field_1' => 1, 'field_2' => 'value', 'unknown' => 'default_value']
 dd($request->getRequestData()); // ['field_1' => 1, 'field_2' => 'value']
 
 // or with nested request parameters
@@ -237,9 +242,13 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
     {
-        // get request data
+        // get request data field
         $requestData = $this->getRequestData(); // return your request data as array
-        $requestData = $this->getRequestData(false); // return your request data as stdclass object
+        $requestData = [
+            'field_1' => $this->getField('field_1'), 
+            'field_2' => $this->getField('field_2'),
+            'unknown' => $this->getField('unknown', 'default_value'),
+        ];
         
         // process your business logic here
         
@@ -256,7 +265,11 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
     public function execute(): void
     {
         $requestData = $this->getRequestData(); // return your request data as array
-        $requestData = $this->getRequestData(false); // return your request data as stdclass object
+        $requestData = [
+            'field_1' => $this->getField('field_1'), 
+            'field_2' => $this->getField('field_2'),
+            'unknown' => $this->getField('unknown', 'default_value'),
+        ];
         
         // process your business logic here
         
@@ -277,10 +290,7 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 final class CustomUsecase extends Usecase implements CustomUsecaseInterface
 {
     public function execute(): void
-    {
-        // get request data
-        $requestData = $this->getRequestData(); // return []
-        
+    {        
         // process your business logic here
         
         // send usecase response with content
@@ -303,7 +313,6 @@ final class CustomUsecase extends Usecase implements CustomUsecaseInterface
     {
         // get request data
         $requestData = $this->getRequestData(); // return your request data as array
-        $requestData = $this->getRequestData(false); // return your request data as stdclass object
         
         // process your business logic here
         

@@ -6,11 +6,19 @@ namespace Urichy\Core\Request\Traits;
 
 trait RequestTransformer
 {
+    use PropertyAccessor;
+
     /**
      * @param array<string, mixed> $requestPayload
      */
-    protected static function requestToObject(array $requestPayload): object
+    protected static function requestToObject(array $requestPayload): static
     {
-        return json_decode(strval(json_encode($requestPayload)));
+        $instance = new static();
+
+        foreach ($requestPayload as $field => $value) {
+            $instance->{$field} = $value;
+        }
+
+        return $instance;
     }
 }

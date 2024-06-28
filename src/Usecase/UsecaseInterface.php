@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Urichy\Core\Usecase;
 
 use Urichy\Core\Presenter\PresenterInterface;
-use Urichy\Core\Request\RequestBuilderInterface;
+use Urichy\Core\Request\RequestInterface;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
@@ -26,10 +26,10 @@ interface UsecaseInterface
     /**
      * Set applicative request to be processed by usecase
      */
-    public function setRequest(?RequestBuilderInterface $request = null): static;
+    public function setRequest(RequestInterface $request): static;
 
     /**
      * Set presenter to get usecase response
      */
-    public function setPresenter(?PresenterInterface $presenter = null): static;
+    public function setPresenter(PresenterInterface $presenter): static;
 }

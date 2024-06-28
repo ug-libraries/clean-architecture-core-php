@@ -14,11 +14,7 @@ name: "Urichy Clean Architecture Core CI"
 
 on:
   push:
-    branches:
-      - "master"
   pull_request:
-    branches:
-      - "master"
 
 jobs:
   tests:

@@ -78,8 +78,7 @@ final class UsecaseTest extends TestCase
                 $this->presenter->present(Response::create(
                     statusCode: StatusCode::OK->getValue(),
                     data: [
-                        'request' => $this->request,
-                        'request_data' => $this->getRequestData(),
+                        'request_data' => [],
                     ]
                 ));
             }
@@ -90,7 +89,6 @@ final class UsecaseTest extends TestCase
             ->execute();
 
         $response = $this->customPresenter->getResponse();
-        $this->assertNull($response->get('request'));
         $this->assertCount(0, $response->get('request_data'));
         $this->assertTrue($response->isSuccess());
         $this->assertNull($response->getMessage());
@@ -139,7 +137,11 @@ final class UsecaseTest extends TestCase
             {
                 $this->presenter->present(Response::create(
                     statusCode: StatusCode::OK->getValue(),
-                    data: (array)$this->getRequestData()
+                    data: [
+                        'field_1' => $this->getField('field_1'),
+                        'integer' => $this->getField('field_2.integer'),
+                        'unknown' => $this->getField('field_2.unknown', 'default_value'),
+                    ]
                 ));
             }
         };
@@ -164,17 +166,14 @@ final class UsecaseTest extends TestCase
 
         $responseData = $response->getData();
 
-        $this->assertArrayHasKey('field_2', $responseData);
+        $this->assertArrayHasKey('field_1', $responseData);
         $this->assertSame('field_default_value', $responseData['field_1']);
 
-        $this->assertArrayHasKey('boolean', $responseData['field_2']);
-        $this->assertFalse($responseData['field_2']['boolean']);
+        $this->assertArrayHasKey('integer', $responseData);
+        $this->assertEquals(666, $responseData['integer']);
 
-        $this->assertArrayHasKey('integer', $responseData['field_2']);
-        $this->assertSame(666, $responseData['field_2']['integer']);
-
-        $this->assertArrayHasKey('float', $responseData['field_2']);
-        $this->assertSame(666.666, $responseData['field_2']['float']);
+        $this->assertArrayHasKey('unknown', $responseData);
+        $this->assertSame('default_value', $responseData['unknown']);
     }
 
     public function testCanExecuteUsecaseAndReturnFormattedSuccessResponse(): void
@@ -185,7 +184,10 @@ final class UsecaseTest extends TestCase
                 $this->presenter->present(Response::create(
                     statusCode: StatusCode::OK->getValue(),
                     message: 'custom.message',
-                    data: (array)$this->getRequestData()
+                    data: [
+                        'field_1' => $this->request->get('field_1'),
+                        'float' => $this->request->get('field_2.float'),
+                    ]
                 ));
             }
         };
@@ -210,7 +212,10 @@ final class UsecaseTest extends TestCase
         $this->assertEquals(Status::SUCCESS->value, $response['status']);
         $this->assertSame(StatusCode::OK->getValue(), $response['code']);
         $this->assertEquals('custom.message', $response['message']);
-        $this->assertEquals($payload, $response['data']);
+        $this->assertEquals([
+            'field_1' => 'field_value',
+            'float' => 666.666,
+        ], $response['data']);
     }
 
     public function testCanExecuteUsecaseAndReturnFormattedErrorResponse(): void
@@ -222,7 +227,9 @@ final class UsecaseTest extends TestCase
                     success: false,
                     statusCode: StatusCode::NOT_FOUND->getValue(),
                     message: 'error.message',
-                    data: (array)$this->getRequestData()
+                    data: [
+                        'boolean' => $this->request->get('field_2.boolean'),
+                    ]
                 ));
             }
         };
@@ -246,6 +253,8 @@ final class UsecaseTest extends TestCase
         $this->assertEquals(Status::ERROR->value, $response['status']);
         $this->assertSame(StatusCode::NOT_FOUND->getValue(), $response['code']);
         $this->assertEquals('error.message', $response['message']);
-        $this->assertEquals($payload, $response['details']);
+        $this->assertEquals([
+            'boolean' => true,
+        ], $response['details']);
     }
 }

@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace Urichy\Core\Request;
 
+use Ramsey\Uuid\Uuid;
 use Throwable;
 use Urichy\Core\Exception\BadRequestContentException;
 use Urichy\Core\Request\Traits\RequestFilter;
+use Urichy\Core\Request\Traits\RequestTransformer;
 
 /**
  * Application request
@@ -22,6 +24,24 @@ use Urichy\Core\Request\Traits\RequestFilter;
 abstract class Request implements RequestInterface
 {
     use RequestFilter;
+    use RequestTransformer;
+
+    /**
+     * Application request uniq id
+     */
+    private string $requestId;
+
+    /**
+     * Application request payload.
+     *
+     * @var array<string, mixed>
+     */
+    private array $requestPayload = [];
+
+    public function __construct()
+    {
+        $this->requestId = Uuid::uuid4()->toString();
+    }
 
     /**
      * Creates a new application request from given payload.
@@ -29,7 +49,7 @@ abstract class Request implements RequestInterface
      * @param array<string, mixed> $payload
      * @throws BadRequestContentException
      */
-    public static function createFromPayload(array $payload): RequestBuilderInterface
+    public static function createFromPayload(array $payload): static
     {
         $requestValidationResult = static::requestPayloadFilter($payload);
         static::throwMissingFieldsExceptionIfNeeded($requestValidationResult['missing_fields']);
@@ -46,7 +66,25 @@ abstract class Request implements RequestInterface
             ]);
         }
 
-        return new RequestBuilder($payload);
+        return self::requestToObject($payload);
+    }
+
+    /**
+     * Get application request uniq id.
+     */
+    public function getRequestId(): string
+    {
+        return $this->requestId;
+    }
+
+    /**
+     * Set application request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return $this->requestPayload;
     }
 
     /**

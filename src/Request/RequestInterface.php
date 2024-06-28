@@ -20,5 +20,17 @@ interface RequestInterface
      *
      * @param array<string, mixed> $payload
      */
-    public static function createFromPayload(array $payload): RequestBuilderInterface;
+    public static function createFromPayload(array $payload): static;
+
+    /**
+     * Get the application request field value.
+     */
+    public function get(string $fieldName, mixed $default = null): mixed;
+
+    /**
+     * Set application request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array;
 }

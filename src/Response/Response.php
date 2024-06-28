@@ -93,12 +93,12 @@ class Response implements ResponseInterface
      * ex: $value = $response->get('user.firstname') // return user firstname value or null if not found
      * ex: $value = $response->get('user.account.balance') // return user account balance value or null if not found
      */
-    public function get(string $fieldName): mixed
+    public function get(string $fieldName, mixed $default = null): mixed
     {
         $data = $this->data;
         foreach (explode('.', $fieldName) as $key) {
             if (!isset($data[$key])) {
-                return null;
+                return $default;
             }
 
             $data = $data[$key];

@@ -16,7 +16,6 @@ use stdClass;
 use Urichy\Core\Exception\BadRequestContentException;
 use Urichy\Core\Exception\Exception;
 use Urichy\Core\Request\Request as BaseRequest;
-use Urichy\Core\Request\RequestBuilderInterface;
 use Urichy\Core\Request\RequestInterface;
 use Urichy\Core\Response\StatusCode;
 
@@ -41,7 +40,7 @@ final class CustomRequestTest extends TestCase
     {
         $customRequest = new class () extends BaseRequest {
         };
-        $this->assertInstanceOf(RequestBuilderInterface::class, $customRequest::createFromPayload([]));
+        $this->assertInstanceOf(RequestInterface::class, $customRequest::createFromPayload([]));
     }
 
     public function testCanBuildNewRequestAndGetRequestId(): void
@@ -50,12 +49,12 @@ final class CustomRequestTest extends TestCase
         };
         $createdRequest = $customRequest::createFromPayload([]);
         $this->assertNotNull($createdRequest->getRequestId());
-        $this->assertInstanceOf(RequestBuilderInterface::class, $createdRequest);
+        $this->assertInstanceOf(RequestInterface::class, $createdRequest);
     }
 
     public function testCanBuildNewRequestWithParameters(): void
     {
-        $this->assertInstanceOf(RequestBuilderInterface::class, $this->customRequest::createFromPayload([
+        $this->assertInstanceOf(RequestInterface::class, $this->customRequest::createFromPayload([
             'field_1' => true,
             'field_2' => true,
         ]));
@@ -220,40 +219,20 @@ final class CustomRequestTest extends TestCase
             protected static array $requestPossibleFields = [
                 'field_1' => true,
                 'field_2' => true,
-                'field_3' => true,
+                'field_3' => [
+                    'field_4' => true,
+                ],
             ];
         };
         $payload = [
             'field_1' => 1,
             'field_2' => 'value',
-            'field_3' => new stdClass(),
-        ];
-        $this->assertEquals($payload, $customRequest::createFromPayload($payload)->getRequestDataAsArray());
-    }
-
-    public function testCanBuildNewRequestWithRequiredParametersAndGetRequestDataAsObject(): void
-    {
-        $customRequest = new class () extends BaseRequest {
-            protected static array $requestPossibleFields = [
-                'field_1' => true,
-                'field_2' => true,
-                'field_3' => true,
-            ];
-        };
-        $payload = [
-            'field_1' => 1,
-            'field_2' => 'value',
-            'field_3' => new stdClass(),
+            'field_3' => [
+                'field_4' => new stdClass(),
+            ],
         ];
 
-        $this->assertEquals(
-            json_decode(json_encode([
-                'field_1' => 1,
-                'field_2' => 'value',
-                'field_3' => new stdClass(),
-            ])),
-            $customRequest::createFromPayload($payload)->getRequestDataAsObject()
-        );
+        $this->assertEquals($payload, $customRequest::createFromPayload($payload)->toArray());
     }
 
     public function testCanBuildNewRequestWithRequiredParametersAndApplyCustomConstraints(): void
