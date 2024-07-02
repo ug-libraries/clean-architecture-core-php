@@ -26,10 +26,10 @@ interface UsecaseInterface
     /**
      * Set applicative request to be processed by usecase
      */
-    public function setRequest(RequestInterface $request): static;
+    public function withRequest(RequestInterface $request): static;
 
     /**
      * Set presenter to get usecase response
      */
-    public function setPresenter(PresenterInterface $presenter): static;
+    public function withPresenter(PresenterInterface $presenter): static;
 }

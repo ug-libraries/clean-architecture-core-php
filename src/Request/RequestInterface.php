@@ -28,6 +28,11 @@ interface RequestInterface
     public function get(string $fieldName, mixed $default = null): mixed;
 
     /**
+     * Get application request uniq id.
+     */
+    public function getRequestId(): string;
+
+    /**
      * Set application request payload.
      *
      * @return array<string, mixed>

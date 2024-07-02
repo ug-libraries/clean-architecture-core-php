@@ -29,20 +29,4 @@ abstract class Presenter implements PresenterInterface
     {
         $this->response = $response;
     }
-
-    /**
-     * Get the use case response
-     */
-    public function getResponse(): ResponseInterface
-    {
-        return $this->response;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function getFormattedResponse(): array
-    {
-        return $this->response->output();
-    }
 }

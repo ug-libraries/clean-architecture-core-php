@@ -13,13 +13,12 @@ namespace Urichy\Tests\Core\Usecase;
 use PHPUnit\Framework\TestCase;
 use Urichy\Core\Enum\Status;
 use Urichy\Core\Exception\BadRequestContentException;
-use Urichy\Core\Presenter\Presenter as BasePresenter;
-use Urichy\Core\Presenter\PresenterInterface;
 use Urichy\Core\Request\Request as BaseRequest;
 use Urichy\Core\Request\RequestInterface;
 use Urichy\Core\Response\Response;
 use Urichy\Core\Response\StatusCode;
 use Urichy\Core\Usecase\Usecase as BaseUsecase;
+use Urichy\Tests\Core\Usecase\Presenter\CustomPresenter;
 
 /**
  * @author Ulrich Geraud AHOGLA. <iamcleancoder@gmail.com
@@ -27,7 +26,7 @@ use Urichy\Core\Usecase\Usecase as BaseUsecase;
 final class UsecaseTest extends TestCase
 {
     private RequestInterface $customRequest;
-    private PresenterInterface $customPresenter;
+    private CustomPresenter $customPresenter;
 
     protected function setUp(): void
     {
@@ -38,8 +37,7 @@ final class UsecaseTest extends TestCase
             ];
         };
 
-        $this->customPresenter = new class () extends BasePresenter {
-        };
+        $this->customPresenter = new CustomPresenter();
     }
 
     public function testCanExecuteUsecaseAndReturnEmptyResponse(): void
@@ -47,12 +45,12 @@ final class UsecaseTest extends TestCase
         $usecase = new class () extends BaseUsecase {
             public function execute(): void
             {
-                $this->presenter->present(Response::create());
+                $this->presentResponse(Response::create());
             }
         };
 
         $usecase
-            ->setRequest($this->customRequest::createFromPayload([
+            ->withRequest($this->customRequest::createFromPayload([
                 'field_1' => 'field_value',
                 'field_2' => [
                     'boolean' => true,
@@ -60,10 +58,11 @@ final class UsecaseTest extends TestCase
                     'float' => 666.666,
                 ],
             ]))
-            ->setPresenter($this->customPresenter)
+            ->withPresenter($this->customPresenter)
             ->execute();
 
         $response = $this->customPresenter->getResponse();
+
         $this->assertNotNull($response);
         $this->assertTrue($response->isSuccess());
         $this->assertNull($response->getMessage());
@@ -75,7 +74,7 @@ final class UsecaseTest extends TestCase
         $usecase = new class () extends BaseUsecase {
             public function execute(): void
             {
-                $this->presenter->present(Response::create(
+                $this->presentResponse(Response::create(
                     statusCode: StatusCode::OK->getValue(),
                     data: [
                         'request_data' => [],
@@ -85,7 +84,7 @@ final class UsecaseTest extends TestCase
         };
 
         $usecase
-            ->setPresenter($this->customPresenter)
+            ->withPresenter($this->customPresenter)
             ->execute();
 
         $response = $this->customPresenter->getResponse();
@@ -135,7 +134,7 @@ final class UsecaseTest extends TestCase
         $usecase = new class () extends BaseUsecase {
             public function execute(): void
             {
-                $this->presenter->present(Response::create(
+                $this->presentResponse(Response::create(
                     statusCode: StatusCode::OK->getValue(),
                     data: [
                         'field_1' => $this->getField('field_1'),
@@ -147,7 +146,7 @@ final class UsecaseTest extends TestCase
         };
 
         $usecase
-            ->setRequest($this->customRequest::createFromPayload([
+            ->withRequest($this->customRequest::createFromPayload([
                 'field_1' => 'field_default_value',
                 'field_2' => [
                     'boolean' => false,
@@ -155,7 +154,7 @@ final class UsecaseTest extends TestCase
                     'float' => 666.666,
                 ],
             ]))
-            ->setPresenter($this->customPresenter)
+            ->withPresenter($this->customPresenter)
             ->execute();
 
         $response = $this->customPresenter->getResponse();
@@ -181,12 +180,12 @@ final class UsecaseTest extends TestCase
         $usecase = new class () extends BaseUsecase {
             public function execute(): void
             {
-                $this->presenter->present(Response::create(
+                $this->presentResponse(Response::create(
                     statusCode: StatusCode::OK->getValue(),
                     message: 'custom.message',
                     data: [
-                        'field_1' => $this->request->get('field_1'),
-                        'float' => $this->request->get('field_2.float'),
+                        'field_1' => $this->getField('field_1'),
+                        'float' => $this->getField('field_2.float'),
                     ]
                 ));
             }
@@ -202,20 +201,20 @@ final class UsecaseTest extends TestCase
         ];
 
         $usecase
-            ->setRequest($this->customRequest::createFromPayload($payload))
-            ->setPresenter($this->customPresenter)
+            ->withRequest($this->customRequest::createFromPayload($payload))
+            ->withPresenter($this->customPresenter)
             ->execute();
 
-        $response = $this->customPresenter->getFormattedResponse();
+        $responseAsArray = $this->customPresenter->getResponse()->output();
 
-        $this->assertNotNull($response);
-        $this->assertEquals(Status::SUCCESS->value, $response['status']);
-        $this->assertSame(StatusCode::OK->getValue(), $response['code']);
-        $this->assertEquals('custom.message', $response['message']);
+        $this->assertNotNull($responseAsArray);
+        $this->assertEquals(Status::SUCCESS->value, $responseAsArray['status']);
+        $this->assertSame(StatusCode::OK->getValue(), $responseAsArray['code']);
+        $this->assertEquals('custom.message', $responseAsArray['message']);
         $this->assertEquals([
             'field_1' => 'field_value',
             'float' => 666.666,
-        ], $response['data']);
+        ], $responseAsArray['data']);
     }
 
     public function testCanExecuteUsecaseAndReturnFormattedErrorResponse(): void
@@ -223,12 +222,12 @@ final class UsecaseTest extends TestCase
         $usecase = new class () extends BaseUsecase {
             public function execute(): void
             {
-                $this->presenter->present(Response::create(
+                $this->presentResponse(Response::create(
                     success: false,
                     statusCode: StatusCode::NOT_FOUND->getValue(),
                     message: 'error.message',
                     data: [
-                        'boolean' => $this->request->get('field_2.boolean'),
+                        'boolean' => $this->getField('field_2.boolean'),
                     ]
                 ));
             }
@@ -243,18 +242,18 @@ final class UsecaseTest extends TestCase
         ];
 
         $usecase
-            ->setRequest($this->customRequest::createFromPayload($payload))
-            ->setPresenter($this->customPresenter)
+            ->withRequest($this->customRequest::createFromPayload($payload))
+            ->withPresenter($this->customPresenter)
             ->execute();
 
-        $response = $this->customPresenter->getFormattedResponse();
+        $responseAsArray = $this->customPresenter->getResponse()->output();
 
-        $this->assertNotNull($response);
-        $this->assertEquals(Status::ERROR->value, $response['status']);
-        $this->assertSame(StatusCode::NOT_FOUND->getValue(), $response['code']);
-        $this->assertEquals('error.message', $response['message']);
+        $this->assertNotNull($responseAsArray);
+        $this->assertEquals(Status::ERROR->value, $responseAsArray['status']);
+        $this->assertSame(StatusCode::NOT_FOUND->getValue(), $responseAsArray['code']);
+        $this->assertEquals('error.message', $responseAsArray['message']);
         $this->assertEquals([
             'boolean' => true,
-        ], $response['details']);
+        ], $responseAsArray['details']);
     }
 }

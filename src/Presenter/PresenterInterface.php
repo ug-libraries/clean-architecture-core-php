@@ -23,18 +23,4 @@ interface PresenterInterface
      * @param ResponseInterface $response The response to be presented.
      */
     public function present(ResponseInterface $response): void;
-
-    /**
-     * Get the use case response that was sent.
-     *
-     * @return ResponseInterface The response that was sent.
-     */
-    public function getResponse(): ResponseInterface;
-
-    /**
-     * Return the formatted usecase response that was sent.
-     *
-     * @return array<string, mixed>
-     */
-    public function getFormattedResponse(): array;
 }
