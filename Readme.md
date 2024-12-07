@@ -51,7 +51,7 @@ final class PatientRecordRequest extends Request
             ],
         ],
     ];
-    
+
     protected static function applyConstraintsOnRequestFields(array $requestData): void
     {
         Assert::that($requestData['patient_name'], '[patient_name] must not be an empty string.')->notEmpty()->string();
@@ -59,7 +59,7 @@ final class PatientRecordRequest extends Request
         Assert::that($requestData['medical_history']['current_medications'], '[current_medications] must not be an empty string.')->notEmpty()->string();
         Assert::that($requestData['medical_history']['past_surgeries']['surgery_name'], '[surgery_name] must not be an empty string.')->notEmpty()->string();
         Assert::that($requestData['medical_history']['past_surgeries']['surgery_date'], '[surgery_date] must be a valid date.')->date();
-        
+
         // Optional field constraint
         if (isset($requestData['medical_history']['allergies'])) {
             Assert::that($requestData['medical_history']['allergies'], '[allergies] must be a string.')->string();
@@ -546,7 +546,8 @@ final class BookRecordRequest extends Request implements BookRecordRequestInterf
             $errors[$propertyPath][] = $violation->getMessage();
         }
 
-        if (count($errors) > 0) {
+        if (!empty($errors)) {
+            $errors['message'] = 'invalid.request.field';
             throw new BadRequestContentException($errors);
         }
     }

@@ -20,23 +20,25 @@ trait PropertyAccessor
     {
         return $this->get($name);
     }
-
     public function get(string $fieldName, mixed $default = null): mixed
     {
         $value = $this->requestPayload;
         foreach (explode('.', $fieldName) as $field) {
             if (is_array($value)) {
                 if (!isset($value[$field])) {
-                    return $default;
+                    $value = $default;
+                    break;
                 }
                 $value = $value[$field];
             } elseif (is_object($value)) {
                 if (!property_exists($value, $field)) {
-                    return $default;
+                    $value = $default;
+                    break;
                 }
                 $value = $value->{$field};
             } else {
-                return $default;
+                $value = $default;
+                break;
             }
         }
 

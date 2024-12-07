@@ -15,11 +15,4 @@ namespace Urichy\Core\Exception;
  */
 final class BadRequestContentException extends Exception
 {
-    /**
-     * @param array<string, mixed> $errors
-     */
-    public function __construct(array $errors)
-    {
-        parent::__construct($errors);
-    }
 }

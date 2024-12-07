@@ -13,6 +13,7 @@ namespace Urichy\Tests\Core\Request;
 use Assert\Assert;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Throwable;
 use Urichy\Core\Exception\BadRequestContentException;
 use Urichy\Core\Exception\Exception;
 use Urichy\Core\Request\Request as BaseRequest;
@@ -246,10 +247,19 @@ final class CustomRequestTest extends TestCase
 
             protected static function applyConstraintsOnRequestFields(array $requestData): void
             {
-                Assert::that(
-                    $requestData['field_1'],
-                    '[field_1] field must not be an empty string.'
-                )->notEmpty()->string();
+                try {
+                    Assert::that(
+                        $requestData['field_1'],
+                        '[field_1] field must not be an empty string.'
+                    )->notEmpty()->string();
+                } catch (Throwable $exception) {
+                    throw new BadRequestContentException([
+                        'message' => 'invalid.request.fields',
+                        'details' => [
+                            'error' => $exception->getMessage(),
+                        ],
+                    ]);
+                }
             }
         };
 
@@ -261,7 +271,7 @@ final class CustomRequestTest extends TestCase
             ];
             $customRequest::createFromPayload($payload);
         } catch (BadRequestContentException $exception) {
-            $this->assertEquals('[field_1] field must not be an empty string.', $exception->getDetailsMessage());
+            self::assertEquals('[field_1] field must not be an empty string.', $exception->getDetailsMessage());
         }
     }
 

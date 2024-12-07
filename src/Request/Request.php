@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Urichy\Core\Request;
 
 use Ramsey\Uuid\Uuid;
-use Throwable;
 use Urichy\Core\Exception\BadRequestContentException;
 use Urichy\Core\Request\Traits\RequestFilter;
 use Urichy\Core\Request\Traits\RequestTransformer;
@@ -55,16 +54,7 @@ abstract class Request implements RequestInterface
         static::throwMissingFieldsExceptionIfNeeded($requestValidationResult['missing_fields']);
         static::throwUnRequiredFieldsExceptionIfNeeded($requestValidationResult['unauthorized_fields']);
 
-        try {
-            static::applyConstraintsOnRequestFields($payload);
-        } catch (Throwable $exception) {
-            throw new BadRequestContentException([
-                'message' => 'invalid.request.fields',
-                'details' => [
-                    'error' => $exception->getMessage(),
-                ],
-            ]);
-        }
+        static::applyConstraintsOnRequestFields($payload);
 
         return self::requestToObject($payload);
     }
@@ -94,7 +84,7 @@ abstract class Request implements RequestInterface
      */
     protected static function throwMissingFieldsExceptionIfNeeded(array $missingFields): void
     {
-        if (count($missingFields) > 0) {
+        if (!empty($missingFields)) {
             throw new BadRequestContentException([
                 'message' => 'missing.required.fields',
                 'details' => [
@@ -111,7 +101,7 @@ abstract class Request implements RequestInterface
      */
     protected static function throwUnRequiredFieldsExceptionIfNeeded(array $unauthorizedFields): void
     {
-        if (count($unauthorizedFields) > 0) {
+        if (!empty($unauthorizedFields)) {
             throw new BadRequestContentException([
                 'message' => 'illegal.fields',
                 'details' => [

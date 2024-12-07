@@ -34,4 +34,16 @@ trait ExceptionFormatter
      * @return array<string, mixed>
      */
     abstract public function getErrors(): array;
+
+    /**
+     * Get exception status code.
+     *
+     * @return int
+     */
+    abstract public function getCode();
+
+    /**
+     * Get exception message.
+     */
+    abstract public function getMessage(): string;
 }
